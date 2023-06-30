@@ -1,3 +1,5 @@
+import { User } from '@/types/User'
+import { kv } from '@vercel/kv'
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
@@ -15,5 +17,36 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   secret: process.env.JWT_TOKEN,
-  callbacks: {},
+  callbacks: {
+    async signIn({ user }) {
+      const dbUser = await kv.get<User | null>(`user:${user.id}`)
+
+      if (!dbUser) {
+        await kv.set(`user:${user.id}`, {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        })
+        await kv.set(`user:email:${user.email}`, user.id)
+      }
+
+      return true
+    },
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.id = token.id
+      }
+      return session
+    },
+    async jwt({ user, token }) {
+      if (user) {
+        token.id = user.id
+      }
+      return token
+    },
+    async redirect() {
+      return '/dashboard'
+    },
+  },
 }

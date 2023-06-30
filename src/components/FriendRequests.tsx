@@ -1,17 +1,34 @@
 'use client'
 
+import { ably } from '@/lib/ably'
+import { useEffect, useState } from 'react'
+import { revalidatePath } from 'next/cache'
+
+export interface Request {
+    senderEmail: string
+    senderId: string
+}
+
 interface params {
     sessionId: string
-    requestList: {
-        senderEmail: string
-        senderId: string
-    }[]
+    requestList: Request[]
 }
 
 const FriendRequests = ({requestList, sessionId}: params) => {
+    const [friendsRequestList, setFriendsRequestList] = useState(requestList)
+
+    useEffect(() => {
+            const channel = ably.channels.get(
+            `user__${sessionId}__incoming_friend_requests`
+            )
+
+            channel.subscribe((e) => {
+                setFriendsRequestList(prevState => [...prevState, e.data])
+            })
+    },[sessionId])
 
     return (<>
-        {requestList.length === 0 
+        {friendsRequestList.length === 0
         ?   <div className='flex items-center w-full h-fit justify-center pt-2'>
                 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" className='w-24 h-24'>
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -20,8 +37,8 @@ const FriendRequests = ({requestList, sessionId}: params) => {
                 <h1 className='font-normal text-5xl'>No request yet</h1>
             </div>
         :   <div className="text-white h-fit w-full grid grid-cols-2 pt-2">
-                {requestList.map((request) => <>
-                    <div className="text-white h-fit w-full bg-[#202020] rounded-md border border-gray-700 flex p-2 items-center justify-between gap-1" key={request.senderId}>
+                {friendsRequestList.map((request) =>
+                     <div key={request.senderId} className="text-white h-fit w-full bg-[#202020] rounded-md border border-gray-700 flex p-2 items-center justify-between gap-1">
                         <h1 className='font-bold'>{request.senderEmail}</h1>
                         <form className='flex gap-3'>
                             <button>
@@ -38,7 +55,7 @@ const FriendRequests = ({requestList, sessionId}: params) => {
                             </button>
                         </form>
                     </div>
-                </>)}
+                )}
             </div>
         }
     </>)

@@ -5,7 +5,7 @@ const GoogleSignInButton = () => {
 
     return (
         <button
-            className='w-full bg-transparent flex items-start gap-3 border-2 border-zinc-600 rounded-lg p-1'
+            className='w-full bg-transparent flex items-start gap-3 border-2 border-zinc-600 rounded-md p-1'
             onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
         >
         <svg x="0px" y="0px" width="48" height="48" viewBox="0 0 48 48" className='my-auto'>

@@ -1,5 +1,4 @@
 'use client'
-
 import GoogleSignInButton from '@/components/GoogleSIgnButton'
 
 export default function home() {
@@ -9,11 +8,11 @@ export default function home() {
                 <form className="w-full h-fit font-medium flex flex-col">
                     <label className="text-4xl">
                         <span className="text-lg ">Username</span>
-                        <input type="text" spellCheck='false' pattern="^[a-zA-Z0-9\s]+$" className="peer w-full text-slate-800 bg-transparent border-2 border-[#3c3c3c] rounded-lg invalid:border-pink-500 invalid:text-pink-600 focus:outline-none px-1"/>
+                        <input type="text" spellCheck='false' pattern="^[a-zA-Z0-9\s]+$" className="peer w-full text-slate-800 bg-transparent border-2 border-[#3c3c3c] rounded-md invalid:border-pink-500 invalid:text-pink-600 focus:outline-none px-1"/>
                     </label>
                     <label className="text-4xl">
                         <span className="text-lg">Email</span>
-                        <input type="email" spellCheck='false' className="peer w-full text-slate-800 bg-transparent border-2 border-[#3c3c3c] rounded-lg invalid:border-pink-500 invalid:text-pink-600 focus:outline-none px-1 "/>
+                        <input type="email" spellCheck='false' className="peer w-full text-slate-800 bg-transparent border-2 border-[#3c3c3c] rounded-md invalid:border-pink-500 invalid:text-pink-600 focus:outline-none px-1 "/>
                     </label>
                 </form>
                 <div className="flex w-full justify-between gap-2.5">

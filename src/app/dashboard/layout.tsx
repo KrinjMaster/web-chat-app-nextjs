@@ -1,8 +1,7 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
-import SessionProvider from '../providers/SessionProvider'
-import { getServerSession } from 'next-auth'
+import NavBar from '@/components/NavBar'
 import { authOptions } from '@/lib/auth'
+import { getServerSession } from 'next-auth'
+import { Inter } from 'next/font/google'
 import { redirect } from 'next/navigation'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -17,12 +16,19 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+    const session = await getServerSession(authOptions)
+
+    if (!session) {
+        redirect('/login')
+    }
+    
   return (
     <html lang="en">
       <body className={`${inter.className}`}>
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+        <section className='max-w-[1024px] mx-auto h-fit flex flex-row'>
+            <NavBar/>
+            {children}
+        </section>
       </body>
     </html>
   )
