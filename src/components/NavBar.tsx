@@ -17,11 +17,16 @@ const NavBar = () => {
 
     useEffect(() => {
           const channel = ably.channels.get(
-          `user__${session?.user.id}__incoming_friend_requests`
+          `user__${session?.user.id}__friend_requests`
           )
 
           channel.subscribe((e) => {
+            if (e.name === 'new_friend_request') {
               setNotflicationQuantity((prevState) => prevState === null ? 1 : prevState + 1)
+            }
+            if (e.name === 'friend_request_denied') {
+              setNotflicationQuantity((prevState) => prevState && prevState - 1 === 0 ? null : prevState && prevState - 1)
+            }
           })
     },[session?.user.id])
 

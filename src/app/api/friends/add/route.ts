@@ -38,9 +38,7 @@ export async function POST(req: Request) {
     // valid request
     const requestUserSession = await getServerSession(authOptions)
 
-    const channel = ably.channels.get(
-      `user__${userId}__incoming_friend_requests`
-    )
+    const channel = ably.channels.get(`user__${userId}__friend_requests`)
 
     channel.publish('new_friend_request', {
       senderEmail: requestUserSession?.user.email,

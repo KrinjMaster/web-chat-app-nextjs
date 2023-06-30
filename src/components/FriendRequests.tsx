@@ -1,8 +1,10 @@
 'use client'
 
 import { ably } from '@/lib/ably'
-import { useEffect, useState } from 'react'
-import { revalidatePath } from 'next/cache'
+import { MouseEventHandler, useEffect, useState } from 'react'
+import { kv } from '@vercel/kv'
+import axios, { AxiosError } from 'axios'
+import toast, { Toaster } from 'react-hot-toast'
 
 export interface Request {
     senderEmail: string
@@ -18,14 +20,33 @@ const FriendRequests = ({requestList, sessionId}: params) => {
     const [friendsRequestList, setFriendsRequestList] = useState(requestList)
 
     useEffect(() => {
-            const channel = ably.channels.get(
-            `user__${sessionId}__incoming_friend_requests`
+            const channel_request = ably.channels.get(
+                `user__${sessionId}__friend_requests`
             )
 
-            channel.subscribe((e) => {
-                setFriendsRequestList(prevState => [...prevState, e.data])
+            channel_request.subscribe((e) => {
+                if (e.name === 'new_friend_request') {
+                    setFriendsRequestList(prevState => [...prevState, e.data])
+                }
             })
     },[sessionId])
+
+    const denyFriend = async (senderId: string, e: React.MouseEvent<HTMLElement>) => {
+        e.preventDefault()
+        try {
+            await axios.post('/api/friends/deny', {
+                senderId: senderId
+            })
+
+            setFriendsRequestList((prevState) => prevState.filter(request => request.senderId !== senderId))
+
+            toast.success('Deleted friend request')
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                toast.error(err.response?.data)
+            } 
+        }
+    }
 
     return (<>
         {friendsRequestList.length === 0
@@ -47,7 +68,7 @@ const FriendRequests = ({requestList, sessionId}: params) => {
                                     <path fillRule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
                                 </svg>
                             </button>
-                            <button>
+                            <button onClick={(e) => denyFriend(request.senderId, e)}>
                                 <svg width="16" height="16" fill="currentColor" className="h-8 w-8 hover:fill-red-600 transition-colors duration-200 ease-linear" viewBox="0 0 16 16">
                                     <path fillRule="evenodd" d="M11 7.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
                                     <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
@@ -58,6 +79,7 @@ const FriendRequests = ({requestList, sessionId}: params) => {
                 )}
             </div>
         }
+        <Toaster position="top-center" reverseOrder={false} toastOptions={{duration:2000}} />
     </>)
 }
 

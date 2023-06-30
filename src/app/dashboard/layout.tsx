@@ -1,5 +1,6 @@
 import NavBar from '@/components/NavBar'
 import { authOptions } from '@/lib/auth'
+import { kv } from '@vercel/kv'
 import { getServerSession } from 'next-auth'
 import { Inter } from 'next/font/google'
 import { redirect } from 'next/navigation'
