@@ -5,9 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import NavBarSkeleton from './NavBarSkeleton'
+import { Toaster, toast } from 'react-hot-toast'
 
-const NavBar = () => {
-    const [notflicationQuantity, setNotflicationQuantity] = useState<number | null>(null)
+const NavBar = ({ unseenFriendRequests }: { unseenFriendRequests: number }) => {
+    const [friendReqQuantity, setFriendReqQuantity] = useState<number | null>(null)
 
     const { data: session} = useSession({
       required: true
@@ -16,23 +18,32 @@ const NavBar = () => {
     const pathname = usePathname()
 
     useEffect(() => {
+          unseenFriendRequests === 0 ? null : setFriendReqQuantity(unseenFriendRequests)
+
           const channel = ably.channels.get(
           `user__${session?.user.id}__friend_requests`
           )
 
           channel.subscribe((e) => {
             if (e.name === 'new_friend_request') {
-              setNotflicationQuantity((prevState) => prevState === null ? 1 : prevState + 1)
+              setFriendReqQuantity((prevState) => prevState === null ? 1 : prevState + 1)
+              toast('You have new friend request!', {
+                icon: '🔔',
+              })
             }
             if (e.name === 'friend_request_denied') {
-              setNotflicationQuantity((prevState) => prevState && prevState - 1 === 0 ? null : prevState && prevState - 1)
+              setFriendReqQuantity((prevState) => prevState && prevState - 1 === 0 ? null : prevState && prevState - 1)
+            }
+            if (e.name === 'new_friend_added') {
+              setFriendReqQuantity((prevState) => prevState && prevState - 1 === 0 ? null : prevState && prevState - 1)
+              toast('You have new friend!', {
+                icon: '🔔',
+              })
             }
           })
     },[session?.user.id])
 
     if (session && session.user.image) {
-
-
       return (
         <section className='h-screen w-72 flex flex-col py-2 justify-between sticky'>
           <Link href='/dashboard/messages' className={`w-full flex gap-1 rounded-lg hover:bg-[#303030] hover:text-white p-1 font-bold items-center mt-auto transition-colors duration-150 ease-linear ${pathname === '/dashboard/messages' ? 'text-white' : 'text-gray-600'}`}>
@@ -55,14 +66,11 @@ const NavBar = () => {
                 <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
               </svg>
               Incoming
-              {notflicationQuantity && <span className='w-5 h-5 bg-red-500 rounded-full flex items-center justify-center ml-auto'>{notflicationQuantity}</span>}
+              {friendReqQuantity && <span className='w-5 h-5 bg-red-500 rounded-full flex items-center justify-center ml-auto text-white'>{friendReqQuantity}</span>}
             </Link>
           </div>
           <div className='w-full mt-auto flex gap-2 p-1 items-end justify-between'>
-            <div className='group'>
-              <p className='text-sm font-bold text-slate-100 text-left w-full opacity-0 group-hover:opacity-100 relative top-0 transition-opacity duration-150 ease-linear'>{session.user.email}</p>
-              <Image alt='' width='30' height='30' src={session.user.image} className='rounded-md w-12 h-12'/>
-            </div>
+            <Image alt='' width='30' height='30' src={session.user.image} className='rounded-md w-12 h-12'/>
             <button className='hover:text-white text-gray-600 stroke-1 bg-zinc-800 bg-opacity-25 hover:bg-opacity-100 p-1.5 rounded-md text-center z-10 transition-colors duration-150 ease-linear' onClick={() => signOut()}>
               <svg width="16" height="16" fill="currentColor" className="w-10 h-10" viewBox="0 0 16 16">
                 <path fillRule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -70,11 +78,12 @@ const NavBar = () => {
               </svg>
             </button>
           </div>
+          <Toaster position="top-center" reverseOrder={false} toastOptions={{duration: 2000}} />
         </section>
       )
     }
     else {
-      return null
+      return <NavBarSkeleton/>
     }
 }
 

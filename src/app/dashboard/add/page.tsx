@@ -3,23 +3,22 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { useSession } from 'next-auth/react'
 import axios, { AxiosError } from 'axios'
 import { Toaster, toast } from 'react-hot-toast'
-
 interface Form {
     email: string
 }
 
 export default function Home() {
-    const { handleSubmit, register } = useForm<Form>()
+    const { handleSubmit, register, resetField } = useForm<Form>()
     const {data: session} = useSession()
 
     const addUser: SubmitHandler<Form> = async (formContent) => {
-
         try {
             if (session) {
                 await axios.post('/api/friends/add', {
                     email: formContent.email,
                     user: session.user
                 })
+                resetField('email')
                 toast.success('Success')
                 return
             }
@@ -30,7 +29,6 @@ export default function Home() {
                 return
             } 
         }
-
     }
 
     return (

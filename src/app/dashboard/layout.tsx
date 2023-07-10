@@ -1,4 +1,5 @@
 import NavBar from '@/components/NavBar'
+import { ably } from '@/lib/ably'
 import { authOptions } from '@/lib/auth'
 import { kv } from '@vercel/kv'
 import { getServerSession } from 'next-auth'
@@ -22,12 +23,14 @@ export default async function RootLayout({
     if (!session) {
         redirect('/login')
     }
-    
+
+  const unseenFriendRequests = await kv.smembers(`user:${session.user.id}:incoming_friend_requests`)
+
   return (
     <html lang="en">
       <body className={`${inter.className}`}>
         <section className='max-w-[1024px] mx-auto h-fit flex flex-row'>
-            <NavBar/>
+            <NavBar unseenFriendRequests={unseenFriendRequests.length}/>
             {children}
         </section>
       </body>

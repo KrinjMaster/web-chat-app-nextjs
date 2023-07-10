@@ -24,13 +24,24 @@ export async function POST(req: Request) {
       })
     }
 
-    const isAlreadyFriends = await kv.sismember(
+    const isAlreadyRequested = await kv.sismember(
       `user:${userId}:incoming_friend_requests`,
       body.user.id
     )
 
-    if (isAlreadyFriends) {
+    if (isAlreadyRequested) {
       return new Response('You can not add this user twice', {
+        status: 400,
+      })
+    }
+
+    const isAlreadyFriends = await kv.sismember(
+      `user:${userId}:friends`,
+      body.user.id
+    )
+
+    if (isAlreadyFriends) {
+      return new Response('User is already your friend', {
         status: 400,
       })
     }
