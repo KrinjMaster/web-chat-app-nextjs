@@ -29,6 +29,12 @@ export const authOptions: NextAuthOptions = {
           image: user.image,
         })
         await kv.set(`user:email:${user.email}`, user.id)
+        await kv.sadd(`users:list`, {
+          id: user.id,
+          email: user.email,
+          image: user.image,
+          name: user.name,
+        })
       }
 
       return true

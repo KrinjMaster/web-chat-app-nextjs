@@ -3,7 +3,7 @@
 import { ably } from '@/lib/ably'
 import { useEffect, useState } from 'react'
 import axios, { AxiosError } from 'axios'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 export interface Request {
     senderEmail: string
@@ -36,10 +36,10 @@ const FriendRequests = ({requestList, sessionId}: params) => {
             await axios.post('/api/friends/deny', {
                 senderId: senderId
             })
-
+            toast('Friend request denied!', {
+                icon: '🔔',
+              })
             setFriendsRequestList((prevState) => prevState.filter(request => request.senderId !== senderId))
-
-            toast.success('Deleted friend request')
         } catch (err) {
             if (err instanceof AxiosError) {
                 toast.error(err.response?.data)
