@@ -2,7 +2,7 @@ import { Friend } from '@/types/Friend'
 import { authOptions } from '../../../lib/auth'
 import { kv } from '@vercel/kv'
 import { User, getServerSession } from 'next-auth'
-import ChatListBody from '@/components/ChatListBody'
+import ChatList from '@/components/ChatList'
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
@@ -22,11 +22,7 @@ export default async function Home() {
 
   return (
     <main className="text-white w-full h-fit">
-      {friendsListWithMoreData.map((friend: Friend) => 
-        <>
-          <ChatListBody key={friend.id} {...friend}/>
-        </>
-      )}
+      <ChatList friendList={friendsListWithMoreData} sessionId={session?.user.id as string}/>
     </main>
   )
 }

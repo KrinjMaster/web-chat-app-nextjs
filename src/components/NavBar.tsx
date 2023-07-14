@@ -41,6 +41,11 @@ const NavBar = ({ unseenFriendRequests }: { unseenFriendRequests: number }) => {
             icon: '🔔',
           })
         }
+        if (e.name === 'friend_deleted') {
+          toast('You deleted friend!', {
+            icon: '🔔',
+          })
+        }
       })
     },[session?.user.id])
 
