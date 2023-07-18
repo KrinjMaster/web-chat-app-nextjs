@@ -1,9 +1,6 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
 import SessionProvider from '../providers/SessionProvider'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect } from 'next/navigation'
 
 const inter = Inter({ subsets: ['latin'] })
 

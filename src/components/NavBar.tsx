@@ -32,17 +32,17 @@ const NavBar = ({ unseenFriendRequests }: { unseenFriendRequests: number }) => {
           })
           setFriendReqQuantity((prevState) => prevState === null ? 1 : prevState + 1)
         }
-        if (e.name === 'friend_request_denied') {
+        else if (e.name === 'friend_request_denied') {
           setFriendReqQuantity((prevState) => prevState && prevState - 1 === 0 ? null : prevState && prevState - 1)
         }
-        if (e.name === 'new_friend_added') {
+        else if (e.name === 'new_friend_added') {
           setFriendReqQuantity((prevState) => prevState && prevState - 1 === 0 ? null : prevState && prevState - 1)
           toast('You have new friend!', {
             icon: '🔔',
           })
         }
-        if (e.name === 'friend_deleted') {
-          toast('You deleted friend!', {
+        else if (e.name === 'friend_deleted') {
+          toast('Friend deleted!', {
             icon: '🔔',
           })
         }
@@ -55,7 +55,7 @@ const NavBar = ({ unseenFriendRequests }: { unseenFriendRequests: number }) => {
           <div className='w-full h-full flex flex-col gap-5 justify-center'>
             <div className='flex flex-col'>
               <p className='text-gray-500 font-bold ml-1'>Chats</p>
-              <Link href='/dashboard/messages' className={`w-full flex gap-1 rounded-lg hover:bg-[#303030] hover:text-white p-1 font-bold items-center transition-colors duration-150 ease-linear ${pathname === '/dashboard/messages' ? 'text-white' : 'text-gray-600'}`}>
+              <Link href='/dashboard/messages' className={`w-full flex gap-1 rounded-lg hover:bg-[#303030] hover:text-white p-1 font-bold items-center transition-colors duration-150 ease-linear ${pathname.includes('/dashboard/messages') ? 'text-white' : 'text-gray-600'}`}>
                 <svg viewBox="0 0 24 24" stroke="currentColor" strokeLinecap="round" fill='currentColor' strokeLinejoin="round" className='h-8 w-8 p-1 stroke-2'>
                   <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                 </svg> 
@@ -89,7 +89,7 @@ const NavBar = ({ unseenFriendRequests }: { unseenFriendRequests: number }) => {
               </Link>
             </div>
           </div>
-          <div className='w-full mt-auto flex gap-2 p-1 items-end justify-between'>
+          <div className='w-full mt-auto flex gap-2 p-1 items-end justify-between h-12'>
             <Image alt='' width='30' height='30' src={session.user.image} className='rounded-md w-12 h-12'/>
             <button className='hover:text-white text-gray-600 stroke-1 bg-zinc-800 bg-opacity-25 hover:bg-opacity-100 p-1.5 rounded-md text-center z-10 transition-colors duration-150 ease-linear' onClick={() => signOut()}>
               <svg width="16" height="16" fill="currentColor" className="w-10 h-10" viewBox="0 0 16 16">

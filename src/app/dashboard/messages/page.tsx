@@ -21,7 +21,7 @@ export default async function Home() {
   )
 
   return (
-    <main className="text-white w-full h-fit">
+    <main className="text-white w-full h-fit pt-2 grid grid-cols-1">
       <ChatList friendList={friendsListWithMoreData} sessionId={session?.user.id as string}/>
     </main>
   )
