@@ -1,5 +1,4 @@
 import NavBar from '@/components/NavBar'
-import { ably } from '@/lib/ably'
 import { authOptions } from '@/lib/auth'
 import { kv } from '@vercel/kv'
 import { getServerSession } from 'next-auth'

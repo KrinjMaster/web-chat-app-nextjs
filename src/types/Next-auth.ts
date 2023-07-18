@@ -1,7 +1,5 @@
 import { User } from 'next-auth'
 
-type UserPassword = string
-
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string
